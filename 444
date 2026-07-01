@@ -1,1 +1,110 @@
-123
+-- ============================================================
+-- SEMWOK HUB + GAME LOADER
+-- ============================================================
+local CoreGui = game:GetService("CoreGui")
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local LocalPlayer = Players.LocalPlayer
+
+-- (Bagian GUI tetap sama seperti yang kamu buat)
+local ScreenGui = Instance.new("ScreenGui", CoreGui)
+ScreenGui.Name = "SemWokGui"
+ScreenGui.IgnoreGuiInset = true
+
+-- 1. LOADING FRAME
+local LoadingFrame = Instance.new("Frame", ScreenGui)
+LoadingFrame.Size = UDim2.new(1, 0, 1, 0)
+LoadingFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+LoadingFrame.ZIndex = 10
+
+local LoadingText = Instance.new("TextLabel", LoadingFrame)
+LoadingText.Size = UDim2.new(0, 600, 0, 80)
+LoadingText.Position = UDim2.new(0.5, -300, 0.4, 0)
+LoadingText.Text = ""
+LoadingText.TextColor3 = Color3.fromRGB(255, 255, 255)
+LoadingText.Font = Enum.Font.GothamBold
+LoadingText.TextSize = 30
+LoadingText.BackgroundTransparency = 1
+LoadingText.ZIndex = 11
+
+local BarContainer = Instance.new("Frame", LoadingFrame)
+BarContainer.Size = UDim2.new(0, 300, 0, 6)
+BarContainer.Position = UDim2.new(0.5, -150, 0.55, 0)
+BarContainer.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+BarContainer.ZIndex = 11
+Instance.new("UICorner", BarContainer).CornerRadius = UDim.new(0, 3)
+
+local ProgressBar = Instance.new("Frame", BarContainer)
+ProgressBar.Size = UDim2.new(0, 0, 1, 0)
+ProgressBar.BackgroundColor3 = Color3.fromRGB(100, 100, 255)
+ProgressBar.ZIndex = 12
+
+local fullText = "LOADING SEMWOK HUB"
+task.spawn(function()
+    for i = 1, #fullText do
+        LoadingText.Text = string.sub(fullText, 1, i)
+        task.wait(0.15)
+    end
+end)
+
+-- 2. TOGGLE & LOCK
+local ButtonsContainer = Instance.new("Frame", ScreenGui)
+ButtonsContainer.Size = UDim2.new(0, 80, 0, 100)
+ButtonsContainer.Position = UDim2.new(0, 20, 0.5, -200)
+ButtonsContainer.BackgroundTransparency = 1
+
+local ToggleBtn = Instance.new("TextButton", ButtonsContainer)
+ToggleBtn.Size = UDim2.new(1, 0, 0, 40)
+ToggleBtn.Text = "Toggle"
+ToggleBtn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+ToggleBtn.TextColor3 = Color3.new(1, 1, 1)
+Instance.new("UICorner", ToggleBtn).CornerRadius = UDim.new(0, 4)
+
+local LockBtn = Instance.new("TextButton", ButtonsContainer)
+LockBtn.Size = UDim2.new(1, 0, 0, 40)
+LockBtn.Position = UDim2.new(0, 0, 0, 50)
+LockBtn.Text = "Lock"
+LockBtn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+LockBtn.TextColor3 = Color3.new(1, 1, 1)
+Instance.new("UICorner", LockBtn).CornerRadius = UDim.new(0, 4)
+
+-- 3. MAIN MENU
+local MainMenu = Instance.new("Frame", ScreenGui)
+local defaultPos = UDim2.new(0.5, -275, 0.5, -175)
+MainMenu.Size = UDim2.new(0, 550, 0, 350)
+MainMenu.Position = defaultPos
+MainMenu.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+MainMenu.Visible = false
+MainMenu.Active = true
+MainMenu.Draggable = true
+Instance.new("UICorner", MainMenu).CornerRadius = UDim.new(0, 6)
+
+ToggleBtn.MouseButton1Click:Connect(function() 
+    MainMenu.Visible = not MainMenu.Visible
+    if MainMenu.Visible then MainMenu.Position = defaultPos end
+end)
+
+local isLocked = false
+LockBtn.MouseButton1Click:Connect(function()
+    isLocked = not isLocked
+    MainMenu.Draggable = not isLocked
+    LockBtn.Text = isLocked and "Unlock" or "Lock"
+end)
+
+-- 4. FINISH LOADING & LOAD CHEAT
+TweenService:Create(ProgressBar, TweenInfo.new(8), {Size = UDim2.new(1, 0, 1, 0)}):Play()
+task.wait(8)
+LoadingFrame:TweenPosition(UDim2.new(0, 0, -1, 0), "Out", "Quad", 0.5)
+MainMenu.Visible = true
+
+-- Integrasi Script Game
+local Games = {
+    [118915549367482] = "https://raw.githubusercontent.com/gumanba/Scripts/main/DontWaketheBrainrots",
+}
+
+local ScriptURL = Games[game.PlaceId]
+if ScriptURL then
+    loadstring(game:HttpGet(ScriptURL))()
+else
+    warn("❌ Map tidak support script cheat!")
+end
